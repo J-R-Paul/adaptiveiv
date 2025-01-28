@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 authors = [
-    { name = "J-R-Paul", email = "73599839+J-R-Paul@users.noreply.github.com" }
+    { name = "Joseph R. Paul", email = "jp52@hw.ac.uk" }
 ]
 requires-python = ">=3.12"
 dependencies = [
@@ -31,5 +31,3 @@ dev = [
 
 [tool.uv.sources]
 adaptiveiv = { workspace = true }
-
-
