@@ -17,17 +17,17 @@ adaptive_iv/
 │   ├── adaptive_iv.py      # Main adaptive IV estimator
 │   └── comparison.py       # Other IV estimators for comparison
 │
-├── diagnostics/
-│   ├── __init__.py
-│   ├── first_stage.py      # First stage diagnostic tools
-│   └── inference.py        # Statistical inference tools
-│
-└── tests/
+└── diagnostics/
     ├── __init__.py
-    ├── test_splitter.py
-    ├── test_first_stage.py
-    ├── test_selection.py
-    └── test_estimation.py
+    ├── first_stage.py      # First stage diagnostic tools
+    └── inference.py        # Statistical inference tools
+
+tests/
+├── __init__.py
+├── test_splitter.py
+├── test_first_stage.py
+├── test_selection.py
+└── test_estimation.py
 ```
 
 Key components and their roles:
