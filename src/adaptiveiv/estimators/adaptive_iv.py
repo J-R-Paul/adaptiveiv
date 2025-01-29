@@ -3,6 +3,7 @@ import pandas as pd
 from typing import Optional, Union, List
 
 from .base import BaseIVEstimator
+from .split_select_estimator import _SplitSampleSelectEstimator
 from ..core import DataManager
 
 
@@ -138,12 +139,7 @@ class AdaptiveIV(BaseIVEstimator):
                 - t-statistics
                 - group selection
         """
-        if method not in ['adaptive', 'naive']:
-            raise ValueError("method must be 'adaptive' or 'naive'")
 
-
-
-        print("Data Good")
 
 
     def get_diagnostics(self):
