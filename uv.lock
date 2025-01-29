@@ -8,6 +8,7 @@ source = { editable = "." }
 dependencies = [
     { name = "matplotlib" },
     { name = "numpy" },
+    { name = "pytest" },
     { name = "scikit-learn" },
     { name = "scipy" },
     { name = "statsmodels" },
@@ -16,7 +17,6 @@ dependencies = [
 
 [package.dev-dependencies]
 dev = [
-    { name = "adaptiveiv" },
     { name = "ipykernel" },
     { name = "jupyter" },
     { name = "pytest" },
@@ -26,6 +26,7 @@ dev = [
 requires-dist = [
     { name = "matplotlib", specifier = ">=3.10.0" },
     { name = "numpy", specifier = ">=2.2.2" },
+    { name = "pytest", specifier = ">=8.3.4" },
     { name = "scikit-learn", specifier = ">=1.6.1" },
     { name = "scipy", specifier = ">=1.15.1" },
     { name = "statsmodels", specifier = ">=0.14.4" },
@@ -34,7 +35,6 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "adaptiveiv", editable = "." },
     { name = "ipykernel", specifier = ">=6.29.5" },
     { name = "jupyter", specifier = ">=1.1.1" },
     { name = "pytest", specifier = ">=8.3.4" },

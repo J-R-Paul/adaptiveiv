@@ -1,19 +1,64 @@
 import numpy as np
 import pandas as pd
-from typing import Union, Optional
+from typing import Union, Optional, List, Tuple
 
 class DataManager:
+
     def __init__(self):
-        self._data = None
-        self._data_type_flag = None
-        self._split_indices = None
-        self._columns = {
-            'y': None,
-            'w': None,
-            'z': None,
-            'group': None,
-            'x': None
-        }
+            self._data = None
+            self._data_type_flag = None
+            self._split_indices = None
+            self._columns = {
+                'y': '',
+                'w': '',
+                'z': '',
+                'group': '',
+                'x': ''
+            }
+
+    def load_pandas(self, df: pd.DataFrame, y_col: str, w_col: str,
+                    z_cols: Union[List[str], str], group_col: str,
+                    x_cols: Optional[List[str]] = None, dropna: bool = False) -> None:
+        """Load and validate data from pandas DataFrame"""
+        self._validate_dataframe(df)
+        df = self._handle_missing_values(df, dropna)
+        self._validate_columns(df, y_col, w_col, z_cols, group_col, x_cols)
+
+        self._data = df.copy()
+        self._data_type_flag = "pandas"
+        self._store_column_references(y_col, w_col, z_cols, group_col, x_cols)
+
+    def load_from_arrays(self, y: np.ndarray, W: np.ndarray, Z: np.ndarray,
+                        group: np.ndarray, X: Optional[np.ndarray] = None,
+                        x_cols: Optional[List[str]] = None, **kwargs) -> None:
+        """Load data from numpy arrays"""
+        self._validate_arrays(y, W, Z, group, X)
+        data_dict = self._create_data_dict(y, W, Z, group, X, x_cols, kwargs)
+        df = pd.DataFrame(data_dict)
+        self.load_pandas(
+            df=df,
+            y_col=kwargs.get('y_col', 'y'),
+            w_col=kwargs.get('w_col', 'w'),
+            z_cols=kwargs.get('z_cols', self._generate_z_cols(Z)),
+            group_col=kwargs.get('group_col', 'group'),
+            x_cols=x_cols,
+            dropna=kwargs.get('dropna', False)
+        )
+
+    def split_data_in_two(self, prop: float = 0.5,
+                            random_state: Optional[int] = None) -> Tuple[pd.DataFrame, pd.DataFrame]:
+        """Split data into two subsets"""
+        if self._data is None:
+            raise ValueError("No data loaded")
+
+        indices = np.random.RandomState(random_state).permutation(len(self._data))
+        split_idx = int(len(indices) * prop)
+
+        self._split_indices = (indices[:split_idx], indices[split_idx:])
+        return (
+            self._data.iloc[self._split_indices[0]],
+            self._data.iloc[self._split_indices[1]]
+        )
 
     def _validate_dataframe(self, df: pd.DataFrame) -> None:
         """Validate that input is a pandas DataFrame"""
@@ -36,32 +81,37 @@ class DataManager:
             if col and col not in df.columns:
                 raise ValueError(f"{col_type} column '{col}' not found in DataFrame")
 
-        check_column(y_col, "Target (y_col)")
-        check_column(w_col, "Weights (w_col)")
+        check_column(y_col, "Outcome (y_col)")
+        check_column(w_col, "Endogenous variable (w_col)")
         check_column(group_col, "Group (group_col)")
 
         # Validate z_cols
         if isinstance(z_cols, str):
-            check_column(z_cols, "Z (z_cols)")
-        elif z_cols:
+            check_column(z_cols, "Instrument (z_cols)")
+        else:
             for col in z_cols:
-                check_column(col, "Z (z_cols)")
+                check_column(col, "Instrument (z_cols)")
 
         # Validate x_cols
         if x_cols is not None:
-            for col in x_cols:
-                check_column(col, "Features (x_cols)")
+            if isinstance(x_cols, str):
+                check_column(x_cols, "Instrument (z_cols)")
+            else:
+                for col in x_cols:
+                    check_column(col, "Features (x_cols)")
 
-    def _store_column_references(self, y_col: str, w_col: str,
-                               z_cols: Union[List[str], str],
-                               group_col: str,
-                               x_cols: Optional[List[str]]) -> None:
+    def _store_column_references(self,
+                                y_col: str,
+                                w_col: str,
+                                z_cols: List[str] | str,
+                                group_col: str,
+                                x_cols: List[str] | str | None) -> None:
         """Store column references in internal dictionary"""
         self._columns['y'] = y_col
         self._columns['w'] = w_col
-        self._columns['z'] = z_cols
+        self._columns['z'] = z_cols                # type: ignore
         self._columns['group'] = group_col
-        self._columns['x'] = x_cols
+        self._columns['x'] = x_cols                # type: ignore
 
     def _validate_arrays(self, y: np.ndarray, W: np.ndarray, Z: np.ndarray,
                         group: np.ndarray, X: Optional[np.ndarray]) -> None:
@@ -69,21 +119,21 @@ class DataManager:
         n_samples = len(y)
 
         if len(W) != n_samples:
-            raise ValueError("Weight array length must match target array length")
+            raise ValueError("W array length must match y array length")
 
         if len(group) != n_samples:
-            raise ValueError("Group array length must match target array length")
+            raise ValueError("Group array length must match y array length")
 
         if Z.ndim == 1:
             Z = Z.reshape(-1, 1)
         elif Z.shape[0] != n_samples:
-            raise ValueError("Z array rows must match target array length")
+            raise ValueError("Z array rows must match y array length")
 
         if X is not None:
             if X.ndim != 2:
-                raise ValueError("X must be a 2D array")
+                raise ValueError("X must be a 2D array. If 1D, reshape using X.reshape(-1, 1)")
             if X.shape[0] != n_samples:
-                raise ValueError("X array rows must match target array length")
+                raise ValueError("X array rows must match y array length")
 
     def _create_data_dict(self, y: np.ndarray, W: np.ndarray, Z: np.ndarray,
                          group: np.ndarray, X: Optional[np.ndarray],

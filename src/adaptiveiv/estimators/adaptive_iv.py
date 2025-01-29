@@ -3,7 +3,7 @@ import pandas as pd
 from typing import Optional, Union, List
 
 from .base import BaseIVEstimator
-from .split_select_estimator import _SplitSampleSelectEstimator
+from .split_select_estimator import SplitSampleSelectInteractEstimator
 from ..core import DataManager
 
 
