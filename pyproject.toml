@@ -33,3 +33,6 @@ dev = [
 testpaths = ["tests"]
 python_files = "test_*.py"
 addopts = "-v"
+
+[tool.uv]
+reinstall-package = ["adaptiveiv"]

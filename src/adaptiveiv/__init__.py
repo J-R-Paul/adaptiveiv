@@ -1,4 +1,4 @@
-from adaptiveiv.estimators.adaptive_iv import AdaptiveIV
-from adaptiveiv.core.data_manager import DataManager
+from adaptiveiv.adaptive_iv import AdaptiveIV
+from adaptiveiv.data_manager import DataManager
 
-__all__ = ["AdaptiveIV"]
+__all__ = ["AdaptiveIV", "DataManager"]

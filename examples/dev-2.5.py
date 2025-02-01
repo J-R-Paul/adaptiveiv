@@ -362,7 +362,8 @@ def gen_data(seed=42):
     # Create DataFrame
     df = pd.DataFrame({'Y': Y, 'D': D, 'Z': Z, 'group': group})
 
-    # Add observed covariates (optional)
+    # Add observed covariates
+    # TODO: Change DGP so that X1 and X2 are relevant for IV estimation
     df['X1'] = np.random.normal(0, 1, n)
     df['X2'] = np.random.binomial(1, 0.5, n)
 
