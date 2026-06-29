@@ -1,8 +1,6 @@
 site_name: adaptiveiv
 theme:
   name: material
-exclude_docs: |
-  superpowers/**
 nav:
   - Home: index.md
   - API Reference: api.md

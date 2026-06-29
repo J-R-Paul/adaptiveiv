@@ -65,7 +65,6 @@ include = [
     "README.md",
     "LICENSE",
     "pyproject.toml",
-    "plan.md",
     "mkdocs.yml",
     "docs/*.md",
     "examples",
